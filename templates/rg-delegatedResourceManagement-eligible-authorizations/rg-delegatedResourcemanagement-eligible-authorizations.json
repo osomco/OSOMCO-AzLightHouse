@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "mspOfferName": {
@@ -12,9 +12,15 @@
     "mspOfferDescription": {
       "type": "string",
       "metadata": {
-        "description": "Name of the Managed Service Provider offering"
+        "description": "Description of the Managed Service Provider offering"
       },
       "defaultValue": "OSOMCO Managed Resource Group"
+    },
+    "rgName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the resource group to delegate"
+      }
     },
     "managedByTenantId": {
       "type": "string",
@@ -48,8 +54,8 @@
             "maximumActivationDuration": "PT4H",
             "managedByTenantApprovers": [
               {
-                "principalId": "5a67c3bb-ee9b-4307-98d1-c88581629766",
-                "principalIdDisplayName": "OSOMCO Az PIM Approvers"
+                "principalId": "1506e794-3b07-4442-a34d-95d69eee1dd3",
+                "principalIdDisplayName": "OSOMCO PIM Approvers"
               }
             ]
           },
@@ -63,8 +69,8 @@
             "maximumActivationDuration": "PT4H",
             "managedByTenantApprovers": [
               {
-                "principalId": "5a67c3bb-ee9b-4307-98d1-c88581629766",
-                "principalIdDisplayName": "OSOMCO Az PIM Approvers"
+                "principalId": "1506e794-3b07-4442-a34d-95d69eee1dd3",
+                "principalIdDisplayName": "OSOMCO PIM Approvers"
               }
             ]
           },
@@ -78,8 +84,8 @@
             "maximumActivationDuration": "PT4H",
             "managedByTenantApprovers": [
               {
-                "principalId": "5a67c3bb-ee9b-4307-98d1-c88581629766",
-                "principalIdDisplayName": "OSOMCO Az PIM Approvers"
+                "principalId": "1506e794-3b07-4442-a34d-95d69eee1dd3",
+                "principalIdDisplayName": "OSOMCO PIM Approvers"
               }
             ]
           },
@@ -92,7 +98,7 @@
   },
   "variables": {
     "mspRegistrationName": "[guid(parameters('mspOfferName'))]",
-    "mspAssignmentName": "[guid(parameters('mspOfferName'))]"
+    "mspAssignmentName": "[guid(parameters('rgName'), parameters('mspOfferName'))]"
   },
   "resources": [
     {
@@ -108,14 +114,29 @@
       }
     },
     {
-      "type": "Microsoft.ManagedServices/registrationAssignments",
-      "apiVersion": "2022-10-01",
-      "name": "[variables('mspAssignmentName')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "rgAssignment",
+      "resourceGroup": "[parameters('rgName')]",
       "dependsOn": [
         "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspRegistrationName'))]"
       ],
       "properties": {
-        "registrationDefinitionId": "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspRegistrationName'))]"
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": [
+            {
+              "type": "Microsoft.ManagedServices/registrationAssignments",
+              "apiVersion": "2022-10-01",
+              "name": "[variables('mspAssignmentName')]",
+              "properties": {
+                "registrationDefinitionId": "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspRegistrationName'))]"
+              }
+            }
+          ]
+        }
       }
     }
   ],
