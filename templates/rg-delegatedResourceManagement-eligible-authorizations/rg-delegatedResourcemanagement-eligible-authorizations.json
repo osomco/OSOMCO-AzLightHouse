@@ -32,20 +32,25 @@
     "authorizations": {
       "type": "array",
       "metadata": {
-        "description": "Permanent role assignments - T1 Reader only"
+        "description": "Permanent role assignments - T1 Reader, T2 Contributor"
       },
       "defaultValue": [
         {
           "principalId": "cfc618da-87f1-4a97-a85f-edde0688159c",
           "roleDefinitionId": "acdd72a7-3385-48ef-bd42-f606fba81ae7",
           "principalIdDisplayName": "OSOMCO Az Support T1"
+        },
+        {
+          "principalId": "5a67c3bb-ee9b-4307-98d1-c88581629766",
+          "roleDefinitionId": "b24988ac-6180-42a0-ab88-20f7382dd24c",
+          "principalIdDisplayName": "OSOMCO Az Support T2"
         }
       ]
     },
     "eligibleAuthorizations": {
       "type": "array",
       "metadata": {
-        "description": "JIT eligible role assignments - T2 Contributor, Key Vault Secrets Officer, Managed Services Delete"
+        "description": "JIT eligible role assignments - T1 (Contributor, KV Secrets), T2 (KV Secrets, MS Delete)"
       },
       "defaultValue": [
         {
@@ -59,9 +64,24 @@
               }
             ]
           },
-          "principalId": "5a67c3bb-ee9b-4307-98d1-c88581629766",
-          "principalIdDisplayName": "OSOMCO Az Support T2",
+          "principalId": "cfc618da-87f1-4a97-a85f-edde0688159c",
+          "principalIdDisplayName": "OSOMCO Az Support T1",
           "roleDefinitionId": "b24988ac-6180-42a0-ab88-20f7382dd24c"
+        },
+        {
+          "justInTimeAccessPolicy": {
+            "multiFactorAuthProvider": "Azure",
+            "maximumActivationDuration": "PT4H",
+            "managedByTenantApprovers": [
+              {
+                "principalId": "1506e794-3b07-4442-a34d-95d69eee1dd3",
+                "principalIdDisplayName": "OSOMCO PIM Approvers"
+              }
+            ]
+          },
+          "principalId": "cfc618da-87f1-4a97-a85f-edde0688159c",
+          "principalIdDisplayName": "OSOMCO Az Support T1",
+          "roleDefinitionId": "b86a8fe4-44ce-4948-aee5-eccb2c155cd7"
         },
         {
           "justInTimeAccessPolicy": {
